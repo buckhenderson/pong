@@ -39,8 +39,8 @@ class Paddle:
         self.y_pos = self.y_pos + self.speed
         if self.y_pos <= 0:
             self.y_pos = 0
-        if self.x_pos >= size[1] - self.height:
-            self.x_pos = size[1] - self.height
+        if self.y_pos >= size[1] - self.height:
+            self.y_pos = size[1] - self.height
 
 
 class Ball:
@@ -101,9 +101,30 @@ while not done:
     for event in pygame.event.get():  # User did something
         if event.type == pygame.QUIT:  # If user clicked close
             done = True  # Flag that we are done so we exit this loop
-
+        elif event.type == pygame.KEYDOWN:
+            # Figure out if it was an arrow key. If so
+            # adjust speed.
+            # player 1
+            if event.key == pygame.K_q:
+                player_1.speed = -6
+            elif event.key == pygame.K_a:
+                player_1.speed = 6
+            # player 2
+            if event.key == pygame.K_UP:
+                player_2.speed = -6
+            elif event.key == pygame.K_DOWN:
+                player_2.speed = 6
+            # User let up on a key
+        elif event.type == pygame.KEYUP:
+            # If it is an arrow key, reset vector back to zero
+            if event.key == pygame.K_q or event.key == pygame.K_a:
+                player_1.speed = 0
+            if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                player_2.speed = 0
     # --- Game logic should go here
     ball.move()
+    player_1.move()
+    player_2.move()
 
 
     screen.fill(BLACK)
