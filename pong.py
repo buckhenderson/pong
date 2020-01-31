@@ -17,6 +17,22 @@ WHITE = (255, 255, 255)
 size = [800, 600]
 paddle_height = 100
 paddle_width = 20
+top_area_y_pos = 30
+top_area_height = 10
+
+
+def print_scores():
+    font = pygame.font.Font('freesansbold.ttf', 28)
+    text1 = font.render(str(player_1_points), True, WHITE, BLACK)
+    text2 = font.render(str(player_2_points), True, WHITE, BLACK)
+    text1_rect = text1.get_rect()
+    text2_rect = text2.get_rect()
+    text1_rect.center = 100, top_area_y_pos / 2
+    text2_rect.center = 700, top_area_y_pos / 2
+    screen.blit(text1, text1_rect)
+    screen.blit(text2, text2_rect)
+    pygame.display.flip()
+    return
 
 
 class Paddle:
@@ -93,6 +109,7 @@ def check_paddle_2(paddle, ball):
 done = False
 
 # start the pygame app
+pygame.init()
 screen = pygame.display.set_mode(size)
 
 pygame.display.set_caption("My Game")
@@ -101,16 +118,13 @@ clock = pygame.time.Clock()
 
 # initialize game components
 player_1 = Paddle()
-print(player_1.x_pos)
-print(player_1.y_pos)
 player_2 = Paddle(x_pos=size[0] - 100)
 ball = Ball()
 player_1_points = 0
 player_2_points = 0
 player_1_win_round = False
 player_2_win_round = False
-top_area_y_pos = 30
-top_area_height = 10
+
 
 # -------- Main Program Loop -----------
 while not done:
@@ -166,6 +180,7 @@ while not done:
     player_1.draw()
     player_2.draw()
     ball.draw()
+    print_scores()
 
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
