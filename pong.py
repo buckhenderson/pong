@@ -79,6 +79,16 @@ class Ball:
             self.speed[1] = self.speed[1] * -1
 
 
+def check_paddle_1(paddle, ball):
+    if paddle.x_pos <= ball.x_pos <= paddle.x_pos + paddle.width and \
+            paddle.y_pos - paddle.width <= ball.y_pos < paddle.y_pos + paddle.height:
+        return True
+
+def check_paddle_2(paddle, ball):
+    if paddle.x_pos <= ball.x_pos + ball.width <= paddle.x_pos + paddle_width and \
+            paddle.y_pos - paddle.width <= ball.y_pos < paddle.y_pos + paddle.height:
+        return True
+
 done = False
 
 # start the pygame app
@@ -132,6 +142,12 @@ while not done:
     player_1.draw()
     player_2.draw()
     ball.draw()
+    if ball.x_pos < player_1.x_pos + 100:
+        if check_paddle_1(player_1, ball):
+            ball.speed[0] *= -1
+    if ball.x_pos > player_2.x_pos - 100:
+        if check_paddle_2(player_2, ball):
+            ball.speed[0] *= -1
 
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
