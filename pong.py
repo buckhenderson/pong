@@ -105,9 +105,28 @@ def check_paddle_2(paddle, ball):
             paddle.y_pos - paddle.width <= ball.y_pos < paddle.y_pos + paddle.height:
         return True
 
+def show_splash():
+    font = pygame.font.Font('freesansbold.ttf', 32)
+    text1 = font.render('!!!PONG!!!', True, WHITE, BLACK)
+    text2 = font.render('A FOR 1-PLAYER', True, WHITE, BLACK)
+    text3 = font.render('X FOR 2-PLAYER', True, WHITE, BLACK)
+    text1_rect = text1.get_rect()
+    text2_rect = text2.get_rect()
+    text3_rect = text3.get_rect()
+    screen.fill(BLACK)
+    text1_rect.center = size[0]/2, size[1]/2 - 100
+    text2_rect.center = size[0]/2, size[1]/2
+    text3_rect.center = size[0]/2, size[1]/2 + 100
+    screen.blit(text1, text1_rect)
+    screen.blit(text2, text2_rect)
+    screen.blit(text3, text3_rect)
+    pygame.display.flip()
+    return
+
 
 done = False
-
+display_splash = True
+regular_game_play = False
 # start the pygame app
 pygame.init()
 screen = pygame.display.set_mode(size)
@@ -153,34 +172,38 @@ while not done:
             if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 player_2.speed = 0
     # --- Game logic should go here
-    ball.move()
-    player_1.move()
-    player_2.move()
-    if ball.x_pos < player_1.x_pos + 100:
-        if check_paddle_1(player_1, ball):
-            ball.speed[0] *= -1
-    if ball.x_pos > player_2.x_pos - 100:
-        if check_paddle_2(player_2, ball):
-            ball.speed[0] *= -1
-    if ball.x_pos == 0:
-        player_2_points += 1
-        player_2_win_round = True
-    if ball.x_pos == size[0] - ball.width:
-        player_1_points += 1
-        player_1_win_round = True
-    if player_1_win_round or player_2_win_round:
-        time.sleep(1)
-        player_1_win_round = False
-        player_2_win_round = False
-        ball = Ball()
+    if regular_game_play:
+        ball.move()
+        player_1.move()
+        player_2.move()
+        if ball.x_pos < player_1.x_pos + 100:
+            if check_paddle_1(player_1, ball):
+                ball.speed[0] *= -1
+        if ball.x_pos > player_2.x_pos - 100:
+            if check_paddle_2(player_2, ball):
+                ball.speed[0] *= -1
+        if ball.x_pos == 0:
+            player_2_points += 1
+            player_2_win_round = True
+        if ball.x_pos == size[0] - ball.width:
+            player_1_points += 1
+            player_1_win_round = True
+        if player_1_win_round or player_2_win_round:
+            time.sleep(1)
+            player_1_win_round = False
+            player_2_win_round = False
+            ball = Ball()
 
-    screen.fill(BLACK)
-    # --- Drawing code should go here
-    pygame.draw.rect(screen, WHITE, [0, top_area_y_pos, size[0], top_area_height])
-    player_1.draw()
-    player_2.draw()
-    ball.draw()
-    print_scores()
+        screen.fill(BLACK)
+        # --- Drawing code should go here
+        pygame.draw.rect(screen, WHITE, [0, top_area_y_pos, size[0], top_area_height])
+        player_1.draw()
+        player_2.draw()
+        ball.draw()
+        print_scores()
+
+    if display_splash:
+        show_splash()
 
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
