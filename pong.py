@@ -21,7 +21,7 @@ paddle_width = 20
 
 class Paddle:
     def __init__(self, x_pos=100
-                 , y_pos=(size[1] / 2) - paddle_height / 2
+                 , y_pos=((size[1] - (top_area_y_pos + top_area_height)) / 2) - paddle_height / 2 + (top_area_y_pos + top_area_height)
                  , width=paddle_width
                  , height=paddle_height
                  , color=WHITE):
@@ -37,8 +37,8 @@ class Paddle:
 
     def move(self):
         self.y_pos = self.y_pos + self.speed
-        if self.y_pos <= 0:
-            self.y_pos = 0
+        if self.y_pos <= top_area_y_pos + top_area_height:
+            self.y_pos = top_area_y_pos + top_area_height
         if self.y_pos >= size[1] - self.height:
             self.y_pos = size[1] - self.height
 
@@ -71,11 +71,11 @@ class Ball:
             self.x_pos = size[0] - self.width
         if self.x_pos >= size[0] - self.width or self.x_pos <= 0:
             self.speed[0] = self.speed[0] * -1
-        if self.y_pos <= 0:
-            self.y_pos = 0
+        if self.y_pos <= top_area_y_pos + top_area_height:
+            self.y_pos = top_area_y_pos + top_area_height
         if self.y_pos >= size[1] - self.width:
             self.y_pos = size[1] - self.width
-        if self.y_pos >= size[1] - self.width or self.y_pos <= 0:
+        if self.y_pos >= size[1] - self.width or self.y_pos <= top_area_y_pos + top_area_height:
             self.speed[1] = self.speed[1] * -1
 
 
@@ -109,6 +109,8 @@ player_1_points = 0
 player_2_points = 0
 player_1_win_round = False
 player_2_win_round = False
+top_area_y_pos = 30
+top_area_height = 10
 
 # -------- Main Program Loop -----------
 while not done:
@@ -160,6 +162,7 @@ while not done:
 
     screen.fill(BLACK)
     # --- Drawing code should go here
+    pygame.draw.rect(screen, WHITE, [0, top_area_y_pos, size[0], top_area_height])
     player_1.draw()
     player_2.draw()
     ball.draw()
