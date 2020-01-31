@@ -89,6 +89,7 @@ def check_paddle_2(paddle, ball):
             paddle.y_pos - paddle.width <= ball.y_pos < paddle.y_pos + paddle.height:
         return True
 
+
 done = False
 
 # start the pygame app
@@ -104,6 +105,10 @@ print(player_1.x_pos)
 print(player_1.y_pos)
 player_2 = Paddle(x_pos=size[0] - 100)
 ball = Ball()
+player_1_points = 0
+player_2_points = 0
+player_1_win_round = False
+player_2_win_round = False
 
 # -------- Main Program Loop -----------
 while not done:
@@ -135,19 +140,29 @@ while not done:
     ball.move()
     player_1.move()
     player_2.move()
-
-
-    screen.fill(BLACK)
-    # --- Drawing code should go here
-    player_1.draw()
-    player_2.draw()
-    ball.draw()
     if ball.x_pos < player_1.x_pos + 100:
         if check_paddle_1(player_1, ball):
             ball.speed[0] *= -1
     if ball.x_pos > player_2.x_pos - 100:
         if check_paddle_2(player_2, ball):
             ball.speed[0] *= -1
+    if ball.x_pos == 0:
+        player_2_points += 1
+        player_2_win_round = True
+    if ball.x_pos == size[0] - ball.width:
+        player_1_points += 1
+        player_1_win_round = True
+    if player_1_win_round or player_2_win_round:
+        time.sleep(1)
+        player_1_win_round = False
+        player_2_win_round = False
+        ball = Ball()
+
+    screen.fill(BLACK)
+    # --- Drawing code should go here
+    player_1.draw()
+    player_2.draw()
+    ball.draw()
 
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
