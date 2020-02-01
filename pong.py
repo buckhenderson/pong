@@ -13,7 +13,7 @@ from datetime import datetime
 # Define some colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-
+RED = (255, 0, 0)
 size = [800, 600]
 paddle_height = 100
 paddle_width = 20
@@ -124,9 +124,28 @@ def show_splash():
     return
 
 
+def predict_player_2():
+    x1, y1 = ball_state_list[0]
+    x2, y2 = ball_state_list[1]
+    print(ball_state_list[0])
+    print(ball_state_list[1])
+    if x2 - x1 > 0:
+        return
+    elif x2 == x1:
+        return
+    else:
+        m = (y2 - y1) / (x2 - x1)
+        b = y1 - m*x1
+        out_y = m*player_2.y_pos + b + (player_2.height / 2)
+        return out_y
+
+
+
+
 done = False
 display_splash = True
 regular_game_play = False
+one_player_play = False
 # start the pygame app
 pygame.init()
 screen = pygame.display.set_mode(size)
@@ -143,8 +162,8 @@ player_1_points = 0
 player_2_points = 0
 player_1_win_round = False
 player_2_win_round = False
-
-
+ball_state_list = []
+i = 0
 # -------- Main Program Loop -----------
 while not done:
     # --- Main event loop
@@ -175,6 +194,13 @@ while not done:
             if event.key == pygame.K_x:
                 display_splash = False
                 regular_game_play = True
+                one_player_play = False
+            if event.key == pygame.K_a:
+                display_splash = False
+                regular_game_play = True
+                one_player_play = True
+                player_2.color = RED
+
 
     # --- Game logic should go here
     if regular_game_play:
@@ -209,6 +235,25 @@ while not done:
 
     if display_splash:
         show_splash()
+
+    if one_player_play:
+        i += 1
+        if i % 30:
+            ball_state_list.append([ball.x_pos, ball.y_pos])
+            if len(ball_state_list) > 2:
+                ball_state_list.pop(0)
+            if len(ball_state_list) == 2:
+                out_y = predict_player_2()
+                print(out_y)
+                if out_y:
+                    if out_y < player_2.y_pos:
+                        player_2.speed = -5
+                        player_2.move()
+                    if out_y > player_2.y_pos:
+                        player_2.speed = 5
+                        player_2.move()
+
+
 
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
