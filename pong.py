@@ -151,7 +151,7 @@ while not done:
     for event in pygame.event.get():  # User did something
         if event.type == pygame.QUIT:  # If user clicked close
             done = True  # Flag that we are done so we exit this loop
-        elif event.type == pygame.KEYDOWN:
+        elif regular_game_play and event.type == pygame.KEYDOWN:
             # Figure out if it was an arrow key. If so
             # adjust speed.
             # player 1
@@ -165,12 +165,17 @@ while not done:
             elif event.key == pygame.K_DOWN:
                 player_2.speed = 6
             # User let up on a key
-        elif event.type == pygame.KEYUP:
+        elif regular_game_play and event.type == pygame.KEYUP:
             # If it is an arrow key, reset vector back to zero
             if event.key == pygame.K_q or event.key == pygame.K_a:
                 player_1.speed = 0
             if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 player_2.speed = 0
+        elif display_splash and event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_x:
+                display_splash = False
+                regular_game_play = True
+
     # --- Game logic should go here
     if regular_game_play:
         ball.move()
