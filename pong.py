@@ -14,7 +14,7 @@ from datetime import datetime
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
-size = [800, 600]
+size = [1000, 600]
 paddle_height = 100
 paddle_width = 20
 top_area_y_pos = 30
@@ -60,13 +60,14 @@ class Paddle:
 
 
 class Ball:
-    def __init__(self, x_pos=200, y_pos=200, width=10, height=10, color=WHITE, speed=5, angle=.75*math.pi):
+    def __init__(self, x_pos=200, y_pos=200, width=10, height=10, color=WHITE, overall_speed=5, angle=(1/4) * math.pi):
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.width = width
         self.height = height
         self.color = color
-        self.speed = [speed*math.cos(angle), speed*math.sin(angle)]
+        self.overall_speed = overall_speed
+        self.speed = [self.overall_speed * math.cos(angle), self.overall_speed * math.sin(angle)]
         self.angle = angle
         self.spin = 0
 
@@ -79,8 +80,10 @@ class Ball:
         pygame.draw.rect(screen, self.color, [self.x_pos, self.y_pos, self.width, self.height])
 
     def move(self):
-        self.x_pos = self.x_pos + self.speed[0]*math.cos(self.angle)
-        self.y_pos = self.y_pos + self.speed[1]*math.sin(self.angle)
+        self.speed[0] = self.overall_speed*math.cos(self.angle)
+        self.speed[1] = self.overall_speed*math.sin(self.angle)
+        self.x_pos = self.x_pos + self.speed[0]
+        self.y_pos = self.y_pos + self.speed[1]
         if self.x_pos <= 0:
             self.x_pos = 0
         if self.x_pos >= size[0] - self.width:
@@ -98,12 +101,56 @@ class Ball:
 def check_paddle_1(paddle, ball):
     if paddle.x_pos <= ball.x_pos <= paddle.x_pos + paddle.width and \
             paddle.y_pos - paddle.width <= ball.y_pos < paddle.y_pos + paddle.height:
-        return True
+        dateTimeObj = datetime.now()
+        timestampStr = dateTimeObj.strftime("%m_%d_%Y_%H_%M_%S_%f")
+        print('{}, x: {}, y: {}'.format(timestampStr, ball.x_pos, ball.y_pos))
+        pygame.image.save(screen, "C:/breakout/screenshot" + timestampStr + ".jpg")
+        if ball.y_pos < paddle.y_pos + (1/5)*paddle.height:
+            print('hitting region 1')
+            return_angle = (7/6)*math.pi
+        elif paddle.y_pos + (1/5)*paddle.height <= ball.y_pos < paddle.y_pos + (2/5)*paddle.height:
+            print('hitting region 2')
+            return_angle = (13/12)*math.pi
+        elif paddle.y_pos + (2/5)*paddle.height <= ball.y_pos < paddle.y_pos + (3/5)*paddle.height:
+            print('hitting region 3')
+            return_angle = 0
+        elif paddle.y_pos + (3/5)*paddle.height <= ball.y_pos < paddle.y_pos + (4/5)*paddle.height:
+            print('hitting region 4')
+            return_angle = (11/12)*math.pi
+        else:
+            print('hitting region 5')
+            return_angle = (5/6)*math.pi
+        print(return_angle)
+        return return_angle
+    else:
+        return None
 
 def check_paddle_2(paddle, ball):
     if paddle.x_pos <= ball.x_pos + ball.width <= paddle.x_pos + paddle_width and \
             paddle.y_pos - paddle.width <= ball.y_pos < paddle.y_pos + paddle.height:
-        return True
+        dateTimeObj = datetime.now()
+        timestampStr = dateTimeObj.strftime("%m_%d_%Y_%H_%M_%S_%f")
+        print('{}, x: {}, y: {}'.format(timestampStr, ball.x_pos, ball.y_pos))
+        pygame.image.save(screen, "C:/breakout/screenshot" + timestampStr + ".jpg")
+        if ball.y_pos < paddle.y_pos + (1 / 5) * paddle.height:
+            print('hitting region 1')
+            return_angle = (11 / 6) * math.pi
+        elif paddle.y_pos + (1 / 5) * paddle.height <= ball.y_pos < paddle.y_pos + (2 / 5) * paddle.height:
+            print('hitting region 2')
+            return_angle = (23 / 12) * math.pi
+        elif paddle.y_pos + (2 / 5) * paddle.height <= ball.y_pos < paddle.y_pos + (3 / 5) * paddle.height:
+            print('hitting region 3')
+            return_angle = 0
+        elif paddle.y_pos + (3 / 5) * paddle.height <= ball.y_pos < paddle.y_pos + (4 / 5) * paddle.height:
+            print('hitting region 4')
+            return_angle = (1 / 12) * math.pi
+        else:
+            print('hitting region 5')
+            return_angle = (1 / 6) * math.pi
+        print(return_angle)
+        return return_angle
+    else:
+        return None
 
 def show_splash():
     font = pygame.font.Font('freesansbold.ttf', 32)
@@ -207,11 +254,17 @@ while not done:
         player_1.move()
         player_2.move()
         if ball.x_pos < player_1.x_pos + 100:
-            if check_paddle_1(player_1, ball):
-                ball.speed[0] *= -1
+            paddle_result = check_paddle_1(player_1, ball)
+            if paddle_result:
+                ball.angle = paddle_result
+                # ball.speed = [ball.overall_speed * math.cos(paddle_result),
+                #               ball.overall_speed * math.sin(paddle_result)]
         if ball.x_pos > player_2.x_pos - 100:
-            if check_paddle_2(player_2, ball):
-                ball.speed[0] *= -1
+            paddle_result = check_paddle_2(player_2, ball)
+            if paddle_result:
+                ball.angle = paddle_result
+                # ball.speed = [ball.overall_speed * math.cos(paddle_result),
+                #               ball.overall_speed * math.sin(paddle_result)]
         if ball.x_pos == 0:
             player_2_points += 1
             player_2_win_round = True
@@ -244,8 +297,6 @@ while not done:
             if len(ball_state_list) == 2:
                 out_y = predict_player_2()
                 # time.sleep(.1)
-                print('out_y = {}'.format(out_y))
-                print('player_2.y_pos = {}'.format(player_2.y_pos))
                 if out_y:
                     multiplier = 1 if out_y > player_2.y_pos else -1
                     player_2.speed = multiplier * 5
@@ -262,5 +313,5 @@ while not done:
 
     # --- Limit to 60 frames per second
     clock.tick(60)
-
+    time.sleep(.1)
 pygame.quit()
