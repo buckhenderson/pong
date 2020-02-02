@@ -247,12 +247,10 @@ while not done:
                 print('out_y = {}'.format(out_y))
                 print('player_2.y_pos = {}'.format(player_2.y_pos))
                 if out_y:
-                    if out_y < player_2.y_pos:
-                        player_2.speed = -5
-                        player_2.move()
-                    if out_y > player_2.y_pos:
-                        player_2.speed = 5
-                        player_2.move()
+                    multiplier = 1 if out_y > player_2.y_pos else -1
+                    player_2.speed = multiplier * 5
+                    player_2.move()
+                    player_2.speed = 0
 
 
 
