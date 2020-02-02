@@ -250,6 +250,9 @@ while not done:
                     multiplier = 1 if out_y > player_2.y_pos else -1
                     player_2.speed = multiplier * 5
                     player_2.move()
+                    if abs((player_2.y_pos + (player_2.height / 2)) - out_y) < 10:
+                        player_2.speed = 0
+                else:
                     player_2.speed = 0
 
 
