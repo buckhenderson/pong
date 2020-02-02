@@ -127,17 +127,14 @@ def show_splash():
 def predict_player_2():
     x1, y1 = ball_state_list[0]
     x2, y2 = ball_state_list[1]
-    print(ball_state_list[0])
-    print(ball_state_list[1])
     if x2 - x1 < 0:
         return
     elif x2 == x1:
         return
     else:
-        print('time to search')
         m = (y2 - y1) / (x2 - x1)
         b = y1 - m*x1
-        out_y = m*player_2.x_pos + b + (player_2.height / 2)
+        out_y = m*player_2.x_pos + b - (player_2.height / 2)
         pygame.draw.line(screen, WHITE, (ball.x_pos, ball.y_pos), (m*size[0], out_y))
         return out_y
 
@@ -246,7 +243,9 @@ while not done:
                 ball_state_list.pop(0)
             if len(ball_state_list) == 2:
                 out_y = predict_player_2()
-                print(out_y)
+                # time.sleep(.1)
+                print('out_y = {}'.format(out_y))
+                print('player_2.y_pos = {}'.format(player_2.y_pos))
                 if out_y:
                     if out_y < player_2.y_pos:
                         player_2.speed = -5
