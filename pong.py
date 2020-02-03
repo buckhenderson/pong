@@ -14,12 +14,18 @@ from datetime import datetime
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
+
+# initialize some display parameters
 size = [1000, 600]
 paddle_height = 100
 paddle_width = 20
 top_area_y_pos = 30
 top_area_height = 10
-
+done = False
+display_splash = True
+regular_game_play = False
+one_player_play = False
+speed_increment = 1
 
 def print_scores():
     font = pygame.font.Font('freesansbold.ttf', 28)
@@ -178,12 +184,6 @@ def predict_player_2():
         return out_y
 
 
-
-
-done = False
-display_splash = True
-regular_game_play = False
-one_player_play = False
 # start the pygame app
 pygame.init()
 screen = pygame.display.set_mode(size)
@@ -249,10 +249,14 @@ while not done:
             paddle_result = check_paddle_1(player_1, ball)
             if paddle_result or paddle_result == 0:
                 ball.angle = paddle_result
+                speed_increment += 1
+                paddle_result = None
         if ball.x_pos > player_2.x_pos - 100:
             paddle_result = check_paddle_2(player_2, ball)
             if paddle_result:
                 ball.angle = paddle_result
+                speed_increment += 1
+                paddle_result = None
         if ball.x_pos == 0:
             player_2_points += 1
             player_2_win_round = True
@@ -264,7 +268,9 @@ while not done:
             player_1_win_round = False
             player_2_win_round = False
             ball = Ball()
-
+            speed_increment = 1
+        if speed_increment % 4 == 0:
+            ball.overall_speed +=1
         screen.fill(BLACK)
         # --- Drawing code should go here
         pygame.draw.rect(screen, WHITE, [0, top_area_y_pos, size[0], top_area_height])
