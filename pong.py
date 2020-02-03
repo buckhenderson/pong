@@ -171,9 +171,10 @@ def predict_player_2():
         return
     else:
         m = (y2 - y1) / (x2 - x1)
+        m = math.sin(ball.angle)
         b = y1 - m*x1
         out_y = m*player_2.x_pos + b - (player_2.height / 2)
-        pygame.draw.line(screen, WHITE, (ball.x_pos, ball.y_pos), (m*size[0], out_y))
+        pygame.draw.line(screen, WHITE, (ball.x_pos, ball.y_pos), (player_2.x_pos, out_y + player_2.height / 2))
         return out_y
 
 
