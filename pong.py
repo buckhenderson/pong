@@ -60,7 +60,7 @@ class Paddle:
 
 
 class Ball:
-    def __init__(self, x_pos=200, y_pos=200, width=10, height=10, color=WHITE, overall_speed=5, angle=(1/4) * math.pi):
+    def __init__(self, x_pos=200, y_pos=200, width=10, height=10, color=WHITE, overall_speed=5, angle=(1/4)*math.pi):
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.width = width
@@ -74,7 +74,7 @@ class Ball:
     def reset(self):
         self.x_pos = 200
         self.y_pos = 200
-        self.angle = .75*math.pi
+        self.angle = (1/4)*math.pi
 
     def draw(self):
         pygame.draw.rect(screen, self.color, [self.x_pos, self.y_pos, self.width, self.height])
@@ -95,7 +95,8 @@ class Ball:
         if self.y_pos >= size[1] - self.width:
             self.y_pos = size[1] - self.width
         if self.y_pos >= size[1] - self.width or self.y_pos <= top_area_y_pos + top_area_height:
-            self.speed[1] = self.speed[1] * -1
+            # self.speed[1] = self.speed[1] * -1
+            self.angle = self.angle * -1
 
 
 def check_paddle_1(paddle, ball):
@@ -106,20 +107,16 @@ def check_paddle_1(paddle, ball):
         print('{}, x: {}, y: {}'.format(timestampStr, ball.x_pos, ball.y_pos))
         pygame.image.save(screen, "C:/breakout/screenshot" + timestampStr + ".jpg")
         if ball.y_pos < paddle.y_pos + (1/5)*paddle.height:
-            print('hitting region 1')
-            return_angle = (7/6)*math.pi
+            return_angle = (11/6)*math.pi
         elif paddle.y_pos + (1/5)*paddle.height <= ball.y_pos < paddle.y_pos + (2/5)*paddle.height:
-            print('hitting region 2')
-            return_angle = (13/12)*math.pi
+            return_angle = (23/12)*math.pi
         elif paddle.y_pos + (2/5)*paddle.height <= ball.y_pos < paddle.y_pos + (3/5)*paddle.height:
-            print('hitting region 3')
             return_angle = 0
         elif paddle.y_pos + (3/5)*paddle.height <= ball.y_pos < paddle.y_pos + (4/5)*paddle.height:
-            print('hitting region 4')
-            return_angle = (11/12)*math.pi
+            return_angle = (1/12)*math.pi
         else:
             print('hitting region 5')
-            return_angle = (5/6)*math.pi
+            return_angle = (1/6)*math.pi
         print(return_angle)
         return return_angle
     else:
@@ -133,21 +130,15 @@ def check_paddle_2(paddle, ball):
         print('{}, x: {}, y: {}'.format(timestampStr, ball.x_pos, ball.y_pos))
         pygame.image.save(screen, "C:/breakout/screenshot" + timestampStr + ".jpg")
         if ball.y_pos < paddle.y_pos + (1 / 5) * paddle.height:
-            print('hitting region 1')
-            return_angle = (11 / 6) * math.pi
+            return_angle = (7 / 6) * math.pi
         elif paddle.y_pos + (1 / 5) * paddle.height <= ball.y_pos < paddle.y_pos + (2 / 5) * paddle.height:
-            print('hitting region 2')
-            return_angle = (23 / 12) * math.pi
+            return_angle = (13 / 12) * math.pi
         elif paddle.y_pos + (2 / 5) * paddle.height <= ball.y_pos < paddle.y_pos + (3 / 5) * paddle.height:
-            print('hitting region 3')
-            return_angle = 0
+            return_angle = math.pi
         elif paddle.y_pos + (3 / 5) * paddle.height <= ball.y_pos < paddle.y_pos + (4 / 5) * paddle.height:
-            print('hitting region 4')
-            return_angle = (1 / 12) * math.pi
+            return_angle = (11 / 12) * math.pi
         else:
-            print('hitting region 5')
-            return_angle = (1 / 6) * math.pi
-        print(return_angle)
+            return_angle = (5 / 6) * math.pi
         return return_angle
     else:
         return None
@@ -255,16 +246,12 @@ while not done:
         player_2.move()
         if ball.x_pos < player_1.x_pos + 100:
             paddle_result = check_paddle_1(player_1, ball)
-            if paddle_result:
+            if paddle_result or paddle_result == 0:
                 ball.angle = paddle_result
-                # ball.speed = [ball.overall_speed * math.cos(paddle_result),
-                #               ball.overall_speed * math.sin(paddle_result)]
         if ball.x_pos > player_2.x_pos - 100:
             paddle_result = check_paddle_2(player_2, ball)
             if paddle_result:
                 ball.angle = paddle_result
-                # ball.speed = [ball.overall_speed * math.cos(paddle_result),
-                #               ball.overall_speed * math.sin(paddle_result)]
         if ball.x_pos == 0:
             player_2_points += 1
             player_2_win_round = True
@@ -313,5 +300,4 @@ while not done:
 
     # --- Limit to 60 frames per second
     clock.tick(60)
-    time.sleep(.1)
 pygame.quit()
