@@ -28,7 +28,7 @@ def print_scores():
     text1_rect = text1.get_rect()
     text2_rect = text2.get_rect()
     text1_rect.center = 100, top_area_y_pos / 2
-    text2_rect.center = 700, top_area_y_pos / 2
+    text2_rect.center = size[0] - 100, top_area_y_pos / 2
     screen.blit(text1, text1_rect)
     screen.blit(text2, text2_rect)
     pygame.display.flip()
