@@ -256,6 +256,7 @@ while not done:
             if paddle_result:
                 ball.angle = paddle_result
                 speed_increment += 1
+                speed_increment = min(speed_increment, 9)
                 paddle_result = None
         if ball.x_pos == 0:
             player_2_points += 1
@@ -271,6 +272,7 @@ while not done:
             speed_increment = 1
         if speed_increment % 4 == 0:
             ball.overall_speed +=1
+            speed_increment = 1
         screen.fill(BLACK)
         # --- Drawing code should go here
         pygame.draw.rect(screen, WHITE, [0, top_area_y_pos, size[0], top_area_height])
