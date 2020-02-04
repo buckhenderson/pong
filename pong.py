@@ -280,6 +280,12 @@ while not done:
         screen.fill(BLACK)
         # --- Drawing code should go here
         pygame.draw.rect(screen, WHITE, [0, top_area_y_pos, size[0], top_area_height])
+        for j in range(0, int(size[1] / 20)):
+            if j % 2 == 0:
+                color = BLACK
+            else: color = WHITE
+            if top_area_y_pos < j*20:
+                pygame.draw.line(screen, color, (size[0] / 2, j*20), (size[0] / 2, (j + 1)* 20 ), 2)
         player_1.draw()
         player_2.draw()
         ball.draw()
