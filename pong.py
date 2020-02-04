@@ -108,10 +108,10 @@ class Ball:
 def check_paddle_1(paddle, ball):
     if paddle.x_pos <= ball.x_pos <= paddle.x_pos + paddle.width and \
             paddle.y_pos - paddle.width <= ball.y_pos < paddle.y_pos + paddle.height:
-        dateTimeObj = datetime.now()
-        timestampStr = dateTimeObj.strftime("%m_%d_%Y_%H_%M_%S_%f")
-        print('{}, x: {}, y: {}'.format(timestampStr, ball.x_pos, ball.y_pos))
-        pygame.image.save(screen, "C:/breakout/screenshot" + timestampStr + ".jpg")
+        # dateTimeObj = datetime.now()
+        # timestampStr = dateTimeObj.strftime("%m_%d_%Y_%H_%M_%S_%f")
+        # print('{}, x: {}, y: {}'.format(timestampStr, ball.x_pos, ball.y_pos))
+        # pygame.image.save(screen, "C:/breakout/screenshot" + timestampStr + ".jpg")
         if ball.y_pos < paddle.y_pos + (1/5)*paddle.height:
             return_angle = (11/6)*math.pi
         elif paddle.y_pos + (1/5)*paddle.height <= ball.y_pos < paddle.y_pos + (2/5)*paddle.height:
@@ -121,9 +121,7 @@ def check_paddle_1(paddle, ball):
         elif paddle.y_pos + (3/5)*paddle.height <= ball.y_pos < paddle.y_pos + (4/5)*paddle.height:
             return_angle = (1/12)*math.pi
         else:
-            print('hitting region 5')
             return_angle = (1/6)*math.pi
-        print(return_angle)
         return return_angle
     else:
         return None
@@ -131,10 +129,10 @@ def check_paddle_1(paddle, ball):
 def check_paddle_2(paddle, ball):
     if paddle.x_pos <= ball.x_pos + ball.width <= paddle.x_pos + paddle_width and \
             paddle.y_pos - paddle.width <= ball.y_pos < paddle.y_pos + paddle.height:
-        dateTimeObj = datetime.now()
-        timestampStr = dateTimeObj.strftime("%m_%d_%Y_%H_%M_%S_%f")
-        print('{}, x: {}, y: {}'.format(timestampStr, ball.x_pos, ball.y_pos))
-        pygame.image.save(screen, "C:/breakout/screenshot" + timestampStr + ".jpg")
+        # dateTimeObj = datetime.now()
+        # timestampStr = dateTimeObj.strftime("%m_%d_%Y_%H_%M_%S_%f")
+        # print('{}, x: {}, y: {}'.format(timestampStr, ball.x_pos, ball.y_pos))
+        # pygame.image.save(screen, "C:/breakout/screenshot" + timestampStr + ".jpg")
         if ball.y_pos < paddle.y_pos + (1 / 5) * paddle.height:
             return_angle = (7 / 6) * math.pi
         elif paddle.y_pos + (1 / 5) * paddle.height <= ball.y_pos < paddle.y_pos + (2 / 5) * paddle.height:
@@ -185,8 +183,10 @@ def predict_player_2():
 
 
 # start the pygame app
+pygame.mixer.pre_init(44100, -16, 1, 512)
 pygame.init()
 screen = pygame.display.set_mode(size)
+paddle_bounce = pygame.mixer.Sound('C:/Users/ben/PycharmProjects/pong/170142__timgormly__8-bit-blip1.wav')
 
 pygame.display.set_caption("My Game")
 # Used to manage how fast the screen updates
@@ -248,12 +248,14 @@ while not done:
         if ball.x_pos < player_1.x_pos + 100:
             paddle_result = check_paddle_1(player_1, ball)
             if paddle_result or paddle_result == 0:
+                paddle_bounce.play()
                 ball.angle = paddle_result
                 speed_increment += 1
                 paddle_result = None
         if ball.x_pos > player_2.x_pos - 100:
             paddle_result = check_paddle_2(player_2, ball)
             if paddle_result:
+                paddle_bounce.play()
                 ball.angle = paddle_result
                 speed_increment += 1
                 speed_increment = min(speed_increment, 9)
