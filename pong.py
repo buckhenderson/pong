@@ -187,6 +187,7 @@ pygame.mixer.pre_init(44100, -16, 1, 512)
 pygame.init()
 screen = pygame.display.set_mode(size)
 paddle_bounce = pygame.mixer.Sound('C:/Users/ben/PycharmProjects/pong/170142__timgormly__8-bit-blip1.wav')
+score_sound = pygame.mixer.Sound('C:/Users/ben/PycharmProjects/pong/445978__breviceps__error-signal-2.wav')
 
 pygame.display.set_caption("My Game")
 # Used to manage how fast the screen updates
@@ -272,6 +273,7 @@ while not done:
             player_2_win_round = False
             ball = Ball()
             speed_increment = 1
+            score_sound.play()
         if speed_increment % 4 == 0:
             ball.overall_speed +=1
             speed_increment = 1
