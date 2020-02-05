@@ -25,6 +25,9 @@ done = False
 display_splash = True
 regular_game_play = False
 one_player_play = False
+display_ai_splash = False
+pick_level = False
+level = 0
 speed_increment = 1
 max_points = 1
 
@@ -188,6 +191,28 @@ def show_win_screen(winner):
     pygame.display.flip()
     return
 
+def show_ai_screen():
+    font = pygame.font.Font('freesansbold.ttf', 32)
+    text1 = font.render('AI LEVEL', True, WHITE, BLACK)
+    text2 = font.render('1 = EASY', True, WHITE, BLACK)
+    text3 = font.render('2 = MEDIUM', True, WHITE, BLACK)
+    text4 = font.render('3 = HARD', True, WHITE, BLACK)
+    text1_rect = text1.get_rect()
+    text2_rect = text2.get_rect()
+    text3_rect = text3.get_rect()
+    text4_rect = text4.get_rect()
+    screen.fill(BLACK)
+    text1_rect.center = size[0] / 2, size[1] / 2 - 75
+    text2_rect.center = size[0] / 2, size[1] / 2 - 25
+    text3_rect.center = size[0] / 2, size[1] / 2 + 25
+    text4_rect.center = size[0] / 2, size[1] / 2 + 75
+    screen.blit(text1, text1_rect)
+    screen.blit(text2, text2_rect)
+    screen.blit(text3, text3_rect)
+    screen.blit(text4, text4_rect)
+    pygame.display.flip()
+    return
+
 def predict_player_2():
     x1, y1 = ball_state_list[0]
     x2, y2 = ball_state_list[1]
@@ -259,9 +284,19 @@ while not done:
                 one_player_play = False
             if event.key == pygame.K_a:
                 display_splash = False
-                regular_game_play = True
+                regular_game_play = False
                 one_player_play = True
                 player_2.color = RED
+        elif one_player_play and event.type == pygame.KEYUP:
+            if event.key in (pygame.K_1, pygame.K_2, pygame.K_3):
+                pick_level = True
+                regular_game_play = True
+            if event.key == pygame.K_1:
+                level = 1
+            if event.key == pygame.K_2:
+                level = 2
+            if event.key == pygame.K_3:
+                level = 3
         elif won and event.type == pygame.KEYUP:
             player_1_points = 0
             player_2_points = 0
@@ -339,7 +374,10 @@ while not done:
     if won:
         show_win_screen(winner)
 
-    if one_player_play:
+    if one_player_play and not pick_level:
+        show_ai_screen()
+
+    if one_player_play and pick_level:
         i += 1
         if i % 30:
             ball_state_list.append([ball.x_pos, ball.y_pos])
