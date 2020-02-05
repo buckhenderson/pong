@@ -26,7 +26,7 @@ display_splash = True
 regular_game_play = False
 one_player_play = False
 speed_increment = 1
-max_points = 3
+max_points = 1
 
 def print_scores():
     font = pygame.font.Font('freesansbold.ttf', 28)
@@ -262,6 +262,17 @@ while not done:
                 regular_game_play = True
                 one_player_play = True
                 player_2.color = RED
+        elif won and event.type == pygame.KEYUP:
+            player_1_points = 0
+            player_2_points = 0
+            if event.key == pygame.K_x:
+                pygame.quit()
+                done = True
+            if event.key == pygame.K_a:
+                display_splash = True
+                won = False
+                one_player_play = False
+                regular_game_play = False
 
 
     # --- Game logic should go here
