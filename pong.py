@@ -2,7 +2,7 @@ import pygame
 import math
 import time
 from datetime import datetime
-
+# todo add levels of ai
 # to debug, we'll print to log
 ########## having issues with this, works on one machine but not another
 # import sys
@@ -26,6 +26,7 @@ display_splash = True
 regular_game_play = False
 one_player_play = False
 speed_increment = 1
+max_points = 3
 
 def print_scores():
     font = pygame.font.Font('freesansbold.ttf', 28)
@@ -165,6 +166,27 @@ def show_splash():
     pygame.display.flip()
     return
 
+def show_win_screen(winner):
+    font = pygame.font.Font('freesansbold.ttf', 32)
+    text1 = font.render('GAME OVER', True, WHITE, BLACK)
+    text2 = font.render('{} WINS!'.format(winner), True, WHITE, BLACK)
+    text3 = font.render('A TO PLAY AGAIN', True, WHITE, BLACK)
+    text4 = font.render('X TO QUIT', True, WHITE, BLACK)
+    text1_rect = text1.get_rect()
+    text2_rect = text2.get_rect()
+    text3_rect = text3.get_rect()
+    text4_rect = text4.get_rect()
+    screen.fill(BLACK)
+    text1_rect.center = size[0] / 2, size[1] / 2 - 75
+    text2_rect.center = size[0] / 2, size[1] / 2 - 25
+    text3_rect.center = size[0] / 2, size[1] / 2 + 25
+    text4_rect.center = size[0] / 2, size[1] / 2 + 75
+    screen.blit(text1, text1_rect)
+    screen.blit(text2, text2_rect)
+    screen.blit(text3, text3_rect)
+    screen.blit(text4, text4_rect)
+    pygame.display.flip()
+    return
 
 def predict_player_2():
     x1, y1 = ball_state_list[0]
@@ -203,6 +225,7 @@ player_1_win_round = False
 player_2_win_round = False
 ball_state_list = []
 i = 0
+won = False
 # -------- Main Program Loop -----------
 while not done:
     # --- Main event loop
@@ -290,9 +313,20 @@ while not done:
         player_2.draw()
         ball.draw()
         print_scores()
+        if max(player_1_points, player_2_points) == max_points:
+            regular_game_play = False
+            one_player_play = False
+            won = True
+            if player_1_points == max_points:
+                winner = 'PLAYER 1'
+            if player_2_points == max_points:
+                winner = 'PLAYER 2'
 
     if display_splash:
         show_splash()
+
+    if won:
+        show_win_screen(winner)
 
     if one_player_play:
         i += 1
