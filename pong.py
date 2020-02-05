@@ -1,6 +1,7 @@
 import pygame
 import math
 import time
+import random
 from datetime import datetime
 # todo add levels of ai
 # to debug, we'll print to log
@@ -29,7 +30,7 @@ display_ai_splash = False
 pick_level = False
 level = 0
 speed_increment = 1
-max_points = 1
+max_points = 3
 
 def print_scores():
     font = pygame.font.Font('freesansbold.ttf', 28)
@@ -213,20 +214,31 @@ def show_ai_screen():
     pygame.display.flip()
     return
 
-def predict_player_2():
+def predict_player_2(level):
     x1, y1 = ball_state_list[0]
     x2, y2 = ball_state_list[1]
+    rando = random.choice([-1, 1])
+    m = math.sin(ball.angle)
+    b = y1 - m * x1
     if x2 - x1 < 0:
         return
     elif x2 == x1:
         return
-    else:
-        m = (y2 - y1) / (x2 - x1)
-        m = math.sin(ball.angle)
-        b = y1 - m*x1
+    elif level == 1:
         out_y = m*player_2.x_pos + b - (player_2.height / 2)
         pygame.draw.line(screen, WHITE, (ball.x_pos, ball.y_pos), (player_2.x_pos, out_y + player_2.height / 2))
         return out_y
+    elif level == 2:
+        out_y = m * player_2.x_pos + b - (player_2.height / 3)*rando
+        pygame.draw.line(screen, WHITE, (ball.x_pos, ball.y_pos), (player_2.x_pos, out_y + player_2.height / 2))
+        return out_y
+    elif level == 3:
+        out_y = m * player_2.x_pos + b - (player_2.height / 3) * rando
+        pygame.draw.line(screen, WHITE, (ball.x_pos, ball.y_pos), (player_2.x_pos, out_y + player_2.height / 2))
+        return out_y
+
+
+
 
 
 # start the pygame app
@@ -322,6 +334,7 @@ while not done:
                 ball.angle = paddle_result
                 speed_increment += 1
                 paddle_result = None
+                print('speed increment = {}'.format(speed_increment))
         if ball.x_pos > player_2.x_pos - 100:
             paddle_result = check_paddle_2(player_2, ball)
             if paddle_result:
@@ -329,6 +342,7 @@ while not done:
                 ball.angle = paddle_result
                 speed_increment += 1
                 speed_increment = min(speed_increment, 9)
+                print('speed increment = {}'.format(speed_increment))
                 paddle_result = None
         if ball.x_pos == 0:
             player_2_points += 1
@@ -343,7 +357,7 @@ while not done:
             ball = Ball()
             speed_increment = 1
             score_sound.play()
-        if speed_increment % 4 == 0:
+        if speed_increment % 5 == 0:
             ball.overall_speed +=1
             speed_increment = 1
         screen.fill(BLACK)
@@ -384,7 +398,7 @@ while not done:
             if len(ball_state_list) > 2:
                 ball_state_list.pop(0)
             if len(ball_state_list) == 2:
-                out_y = predict_player_2()
+                out_y = predict_player_2(level)
                 # time.sleep(.1)
                 if out_y:
                     multiplier = 1 if out_y > player_2.y_pos else -1
