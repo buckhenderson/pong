@@ -31,6 +31,7 @@ pick_level = False
 level = 0
 speed_increment = 1
 max_points = 3
+rando = 1
 
 def print_scores():
     font = pygame.font.Font('freesansbold.ttf', 28)
@@ -217,7 +218,6 @@ def show_ai_screen():
 def predict_player_2(level):
     x1, y1 = ball_state_list[0]
     x2, y2 = ball_state_list[1]
-    rando = random.choice([-1, 1])
     m = math.sin(ball.angle)
     b = y1 - m * x1
     if x2 - x1 < 0:
@@ -226,16 +226,14 @@ def predict_player_2(level):
         return
     elif level == 1:
         out_y = m*player_2.x_pos + b - (player_2.height / 2)
-        pygame.draw.line(screen, WHITE, (ball.x_pos, ball.y_pos), (player_2.x_pos, out_y + player_2.height / 2))
-        return out_y
+        pygame.draw.line(screen, WHITE, (ball.x_pos, ball.y_pos), (player_2.x_pos, out_y))
     elif level == 2:
-        out_y = m * player_2.x_pos + b - (player_2.height / 3)*rando
-        pygame.draw.line(screen, WHITE, (ball.x_pos, ball.y_pos), (player_2.x_pos, out_y + player_2.height / 2))
-        return out_y
+        out_y = m * player_2.x_pos + b - (player_2.height / 2) + (player_2.height / 3)*rando
+        pygame.draw.line(screen, WHITE, (ball.x_pos, ball.y_pos), (player_2.x_pos, out_y))
     elif level == 3:
-        out_y = m * player_2.x_pos + b - (player_2.height / 3) * rando
-        pygame.draw.line(screen, WHITE, (ball.x_pos, ball.y_pos), (player_2.x_pos, out_y + player_2.height / 2))
-        return out_y
+        out_y = m * player_2.x_pos + b - (player_2.height / 2) + (player_2.height / 2.5)*rando
+        pygame.draw.line(screen, WHITE, (ball.x_pos, ball.y_pos), (player_2.x_pos, out_y))
+    return out_y
 
 
 
@@ -330,11 +328,11 @@ while not done:
         if ball.x_pos < player_1.x_pos + 100:
             paddle_result = check_paddle_1(player_1, ball)
             if paddle_result or paddle_result == 0:
+                rando = random.choice([-1, 1])
                 paddle_bounce.play()
                 ball.angle = paddle_result
                 speed_increment += 1
                 paddle_result = None
-                print('speed increment = {}'.format(speed_increment))
         if ball.x_pos > player_2.x_pos - 100:
             paddle_result = check_paddle_2(player_2, ball)
             if paddle_result:
@@ -342,7 +340,6 @@ while not done:
                 ball.angle = paddle_result
                 speed_increment += 1
                 speed_increment = min(speed_increment, 9)
-                print('speed increment = {}'.format(speed_increment))
                 paddle_result = None
         if ball.x_pos == 0:
             player_2_points += 1
