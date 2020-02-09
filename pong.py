@@ -218,14 +218,15 @@ def show_ai_screen():
 def predict_player_2(level):
     x1, y1 = ball_state_list[0]
     x2, y2 = ball_state_list[1]
-    m = math.sin(ball.angle)
+    m = ball.overall_speed * math.sin(ball.angle)
     b = y1 - m * x1
     if x2 - x1 < 0:
         return
     elif x2 == x1:
         return
     elif level == 1:
-        out_y = m*player_2.x_pos + b - (player_2.height / 2)
+        i = (player_2.x_pos - ball.x_pos) / ball.speed[0]
+        out_y = ball.y_pos + i*ball.speed[1]
         pygame.draw.line(screen, WHITE, (ball.x_pos, ball.y_pos), (player_2.x_pos, out_y))
     elif level == 2:
         out_y = m * player_2.x_pos + b - (player_2.height / 2) + (player_2.height / 3)*rando
@@ -233,6 +234,12 @@ def predict_player_2(level):
     elif level == 3:
         out_y = m * player_2.x_pos + b - (player_2.height / 2) + (player_2.height / 2.5)*rando
         pygame.draw.line(screen, WHITE, (ball.x_pos, ball.y_pos), (player_2.x_pos, out_y))
+    if i % 10 == 0:
+        print('out_y = {}'.format(out_y))
+        print('m = {}'.format(m))
+        print('m ball speed: {}'.format(ball.speed[1]))
+        print('predicted point of collision: {}, {}'.format(player_2.x_pos, out_y))
+    # time.sleep(.1)
     return out_y
 
 
@@ -396,13 +403,21 @@ while not done:
                 ball_state_list.pop(0)
             if len(ball_state_list) == 2:
                 out_y = predict_player_2(level)
-                # time.sleep(.1)
                 if out_y:
-                    multiplier = 1 if out_y > player_2.y_pos else -1
-                    player_2.speed = multiplier * 5
-                    player_2.move()
-                    if abs((player_2.y_pos + (player_2.height / 2)) - out_y) < 10:
+                    multiplier = 1 if out_y > (player_2.y_pos + player_2.height / 2) else -1
+                    if abs((player_2.y_pos + player_2.height / 2) - out_y) < 10:
                         player_2.speed = 0
+                    else:
+                        player_2.speed = multiplier * 5
+                    player_2.move()
+                    print('******************************************')
+                    print('moving player 2')
+                    print('player 2 ypos = {}'.format(player_2.y_pos))
+                    print('offset: {}'.format(player_2.y_pos + player_2.height / 2))
+                    print('y out = {}'.format(out_y))
+                    print('abs diff = {}'.format(abs((player_2.y_pos + player_2.height / 2) - out_y)))
+                    print('speed: {}'.format(player_2.speed))
+                    print('******************************************')
                 else:
                     player_2.speed = 0
 
@@ -410,6 +425,11 @@ while not done:
 
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
+    # if i % 10 == 0 and one_player_play:
+    #     dateTimeObj = datetime.now()
+    #     timestampStr = dateTimeObj.strftime("%m_%d_%Y_%H_%M_%S_%f")
+    #     print('{}, x: {}, y: {}'.format(timestampStr, ball.x_pos, ball.y_pos))
+    #     pygame.image.save(screen, "C:/breakout/screenshot" + timestampStr + ".jpg")
 
     # --- Limit to 60 frames per second
     clock.tick(60)
