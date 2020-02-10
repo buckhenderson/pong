@@ -2,14 +2,6 @@ import pygame
 import math
 import time
 import random
-from datetime import datetime
-# todo add levels of ai
-# to debug, we'll print to log
-########## having issues with this, works on one machine but not another
-# import sys
-# sys.stdout = open('C:/breakout/output.txt', 'w')
-# print('test')
-
 
 # Define some colors
 BLACK = (0, 0, 0)
@@ -33,6 +25,7 @@ speed_increment = 1
 max_points = 3
 rando_1 = 1
 rando_2 = 1
+
 
 def print_scores():
     font = pygame.font.Font('freesansbold.ttf', 28)
@@ -108,17 +101,12 @@ class Ball:
         if self.y_pos >= size[1] - self.width:
             self.y_pos = size[1] - self.width
         if self.y_pos >= size[1] - self.width or self.y_pos <= top_area_y_pos + top_area_height:
-            # self.speed[1] = self.speed[1] * -1
             self.angle = self.angle * -1
 
 
 def check_paddle_1(paddle, ball):
     if paddle.x_pos <= ball.x_pos <= paddle.x_pos + paddle.width and \
             paddle.y_pos - paddle.width <= ball.y_pos < paddle.y_pos + paddle.height:
-        # dateTimeObj = datetime.now()
-        # timestampStr = dateTimeObj.strftime("%m_%d_%Y_%H_%M_%S_%f")
-        # print('{}, x: {}, y: {}'.format(timestampStr, ball.x_pos, ball.y_pos))
-        # pygame.image.save(screen, "C:/breakout/screenshot" + timestampStr + ".jpg")
         if ball.y_pos < paddle.y_pos + (1/5)*paddle.height:
             return_angle = (11/6)*math.pi
         elif paddle.y_pos + (1/5)*paddle.height <= ball.y_pos < paddle.y_pos + (2/5)*paddle.height:
@@ -133,13 +121,10 @@ def check_paddle_1(paddle, ball):
     else:
         return None
 
+
 def check_paddle_2(paddle, ball):
     if paddle.x_pos <= ball.x_pos + ball.width <= paddle.x_pos + paddle_width and \
             paddle.y_pos - paddle.width <= ball.y_pos < paddle.y_pos + paddle.height:
-        # dateTimeObj = datetime.now()
-        # timestampStr = dateTimeObj.strftime("%m_%d_%Y_%H_%M_%S_%f")
-        # print('{}, x: {}, y: {}'.format(timestampStr, ball.x_pos, ball.y_pos))
-        # pygame.image.save(screen, "C:/breakout/screenshot" + timestampStr + ".jpg")
         if ball.y_pos < paddle.y_pos + (1 / 5) * paddle.height:
             return_angle = (7 / 6) * math.pi
         elif paddle.y_pos + (1 / 5) * paddle.height <= ball.y_pos < paddle.y_pos + (2 / 5) * paddle.height:
@@ -153,6 +138,7 @@ def check_paddle_2(paddle, ball):
         return return_angle
     else:
         return None
+
 
 def show_splash():
     font = pygame.font.Font('freesansbold.ttf', 32)
@@ -171,6 +157,7 @@ def show_splash():
     screen.blit(text3, text3_rect)
     pygame.display.flip()
     return
+
 
 def show_win_screen(winner):
     font = pygame.font.Font('freesansbold.ttf', 32)
@@ -194,6 +181,7 @@ def show_win_screen(winner):
     pygame.display.flip()
     return
 
+
 def show_ai_screen():
     font = pygame.font.Font('freesansbold.ttf', 32)
     text1 = font.render('AI LEVEL', True, WHITE, BLACK)
@@ -216,6 +204,7 @@ def show_ai_screen():
     pygame.display.flip()
     return
 
+
 def predict_player_2():
     x1, y1 = ball_state_list[0]
     x2, y2 = ball_state_list[1]
@@ -224,13 +213,30 @@ def predict_player_2():
     elif x2 == x1:
         return
     else:
-        i = (player_2.x_pos - ball.x_pos) / ball.speed[0]
-        out_y = ball.y_pos + i*ball.speed[1]
-        pygame.draw.line(screen, WHITE, (ball.x_pos, ball.y_pos), (player_2.x_pos, out_y))
+        valid_y_out = False
+        ball_x_pos = ball.x_pos
+        ball_y_pos = ball.y_pos
+        ball_x_speed = ball.speed[0]
+        ball_y_speed = ball.speed[1]
+        iterator = 0
+        while not valid_y_out:
+            i = (player_2.x_pos - ball_x_pos) / ball_x_speed
+            out_y = ball_y_pos + i*ball_y_speed
+
+            pygame.draw.line(screen, WHITE, (ball_x_pos, ball_y_pos), (player_2.x_pos, out_y))
+            valid_y_out = top_area_y_pos + top_area_height <= out_y <= size[1] - ball.width
+            if not valid_y_out:
+                iterator += 1
+                if size[1] - ball.width < out_y:
+                    i = abs(((size[1] - ball.width) - ball_y_pos) / ball_y_speed)
+                    ball_x_pos = ball_x_pos + i*ball_x_speed
+                    ball_y_pos = size[1] - ball.width
+                else:
+                    i = abs(((top_area_y_pos + top_area_height) - ball_y_pos) / ball_y_speed)
+                    ball_x_pos = ball_x_pos + i * ball_x_speed
+                    ball_y_pos = top_area_y_pos + top_area_height
+                ball_y_speed *= -1
     return out_y
-
-
-
 
 
 # start the pygame app
@@ -407,14 +413,6 @@ while not done:
                     else:
                         player_2.speed = multiplier * 5
                     player_2.move()
-
-                        # print('moving player 2')
-                        # print('player 2 ypos = {}'.format(player_2.y_pos))
-                        # print('offset: {}'.format(player_2.y_pos + player_2.height / 2))
-                        # print('y out = {}'.format(out_y))
-                        # print('abs diff = {}'.format(abs((player_2.y_pos + player_2.height / 2) - out_y)))
-                        # print('speed: {}'.format(player_2.speed))
-                        # print('******************************************')
                 else:
                     player_2.speed = 0
 
@@ -422,11 +420,7 @@ while not done:
 
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
-    # if i % 10 == 0 and one_player_play:
-    #     dateTimeObj = datetime.now()
-    #     timestampStr = dateTimeObj.strftime("%m_%d_%Y_%H_%M_%S_%f")
-    #     print('{}, x: {}, y: {}'.format(timestampStr, ball.x_pos, ball.y_pos))
-    #     pygame.image.save(screen, "C:/breakout/screenshot" + timestampStr + ".jpg")
+
 
     # --- Limit to 60 frames per second
     clock.tick(60)
