@@ -243,8 +243,8 @@ def predict_player_2():
 pygame.mixer.pre_init(44100, -16, 1, 512)
 pygame.init()
 screen = pygame.display.set_mode(size)
-paddle_bounce = pygame.mixer.Sound('C:/Users/ben/PycharmProjects/pong/170142__timgormly__8-bit-blip1.wav')
-score_sound = pygame.mixer.Sound('C:/Users/ben/PycharmProjects/pong/445978__breviceps__error-signal-2.wav')
+paddle_bounce = pygame.mixer.Sound('170142__timgormly__8-bit-blip1.wav')
+score_sound = pygame.mixer.Sound('445978__breviceps__error-signal-2.wav')
 
 pygame.display.set_caption("My Game")
 # Used to manage how fast the screen updates
